@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('holydays', function (Blueprint $table) {
+        Schema::create('holidays', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('calendar_id');
+            $table->foreignId('user_id');
+            $table->date('day');
+            $table->enum('type', ['decline', 'approve', 'pending'])->default('pending');
             $table->timestamps();
         });
     }

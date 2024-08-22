@@ -53,4 +53,23 @@ class User extends Authenticatable
         return $this->belongsTo(Country::class);
     }
 
+    public function calendars(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Calendar::class);
+    }
+    public function departments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Departament::class);
+    }
+
+    public function holidays(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Holiday::class);
+    }
+
+    public function timesheets(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Timesheet::class);
+    }
+
 }
