@@ -19,7 +19,7 @@ class CityResource extends Resource
 
     protected static ?string $navigationGroup = 'System Management';
 
-    public static ?int $navigationSort = 5;
+    public static ?int $navigationSort = 7;
 
 
     protected static ?string $navigationIcon = 'heroicon-c-building-storefront';
