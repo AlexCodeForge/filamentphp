@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Personal\Resources;
 
-use App\Filament\Resources\TimesheetResource\Pages;
-use App\Filament\Resources\TimesheetResource\RelationManagers;
-use App\Models\Timesheet;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Form;
+use App\Models\Timesheet;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Personal\Resources\TimesheetResource\Pages;
+use App\Filament\Personal\Resources\TimesheetResource\RelationManagers;
+use Filament\Actions\Action;
 
 
 class TimesheetResource extends Resource
@@ -23,9 +23,12 @@ class TimesheetResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-table-cells';
 
-    protected static ?string $navigationGroup = 'Employees Management';
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+    }
 
-    public static ?int $navigationSort = 2;
+
 
     public static function form(Form $form): Form
     {
@@ -33,9 +36,6 @@ class TimesheetResource extends Resource
             ->schema([
                 Forms\Components\Select::make('calendar_id')
                     ->relationship('calendar', 'name')
-                    ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
                     ->required(),
                 Forms\Components\select::make('type')
                     ->options([
@@ -46,7 +46,8 @@ class TimesheetResource extends Resource
                 Forms\Components\DateTimePicker::make('day_in')
                     ->required(),
                 Forms\Components\DateTimePicker::make('day_out')
-                    ->required(),
+                    ->required()
+                    ->after('day_in'),
             ]);
     }
 
@@ -96,6 +97,23 @@ class TimesheetResource extends Resource
                     Tables\Actions\EditAction::make()
                         ->label('Editar'),
                     Tables\Actions\DeleteAction::make(),
+                    // Tables\Actions\Action::make('Create')
+                    //     ->form([
+                    //         Forms\Components\Select::make('calendar_id')
+                    //             ->relationship('calendar', 'name')
+                    //             ->required(),
+                    //         Forms\Components\select::make('type')
+                    //             ->options([
+                    //                 'work' => 'Working',
+                    //                 'pause' => 'In pause',
+                    //             ])
+                    //             ->required(),
+                    //         Forms\Components\DateTimePicker::make('day_in')
+                    //             ->required(),
+                    //         Forms\Components\DateTimePicker::make('day_out')
+                    //             ->required()
+                    //             ->after('day_in'),
+                    //     ])
                 ])->iconButton()
             ])
             ->bulkActions([
@@ -104,7 +122,6 @@ class TimesheetResource extends Resource
                 ]),
             ]);
     }
-
 
     public static function getRelations(): array
     {
@@ -118,7 +135,7 @@ class TimesheetResource extends Resource
         return [
             'index' => Pages\ListTimesheets::route('/'),
             'create' => Pages\CreateTimesheet::route('/create'),
-            'edit' => Pages\EditTimesheet::route('/{record}/edit'),
+            // 'edit' => Pages\EditTimesheet::route('/{record}/edit'),
         ];
     }
 }

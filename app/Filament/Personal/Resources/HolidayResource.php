@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Personal\Resources;
 
-use App\Filament\Resources\HolidayResource\Pages;
-use App\Filament\Resources\HolidayResource\RelationManagers;
-use App\Models\Holiday;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Filters\SelectFilter;
+use App\Models\Holiday;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Personal\Resources\HolidayResource\Pages;
+use App\Filament\Personal\Resources\HolidayResource\RelationManagers;
 
 class HolidayResource extends Resource
 {
@@ -20,9 +20,10 @@ class HolidayResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-calendar-date-range';
 
-    protected static ?string $navigationGroup = 'Employees Management';
-
-    public static ?int $navigationSort = 4;
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+    }
 
     public static function form(Form $form): Form
     {
@@ -31,17 +32,7 @@ class HolidayResource extends Resource
                 Forms\Components\Select::make('calendar_id')
                     ->relationship('calendar', 'name')
                     ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
                 Forms\Components\DatePicker::make('day')
-                    ->required(),
-                Forms\Components\select::make('type')
-                    ->options([
-                        'decline' => 'Decline',
-                        'approve' => 'Approve',
-                        'pending' => 'Pending',
-                    ])
                     ->required(),
             ]);
     }
@@ -87,6 +78,7 @@ class HolidayResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
