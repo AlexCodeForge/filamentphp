@@ -25,7 +25,7 @@ class TimesheetResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        return parent::getEloquentQuery()->orderBy('id', 'desc')->where('user_id', auth()->user()->id);
     }
 
 
@@ -93,28 +93,28 @@ class TimesheetResource extends Resource
 
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\EditAction::make()
-                        ->label('Editar'),
-                    Tables\Actions\DeleteAction::make(),
-                    // Tables\Actions\Action::make('Create')
-                    //     ->form([
-                    //         Forms\Components\Select::make('calendar_id')
-                    //             ->relationship('calendar', 'name')
-                    //             ->required(),
-                    //         Forms\Components\select::make('type')
-                    //             ->options([
-                    //                 'work' => 'Working',
-                    //                 'pause' => 'In pause',
-                    //             ])
-                    //             ->required(),
-                    //         Forms\Components\DateTimePicker::make('day_in')
-                    //             ->required(),
-                    //         Forms\Components\DateTimePicker::make('day_out')
-                    //             ->required()
-                    //             ->after('day_in'),
-                    //     ])
-                ])->iconButton()
+                // ActionGroup::make([
+                //     Tables\Actions\EditAction::make()
+                //         ->label('Editar'),
+                //     Tables\Actions\DeleteAction::make(),
+                //     // Tables\Actions\Action::make('Create')
+                //     //     ->form([
+                //     //         Forms\Components\Select::make('calendar_id')
+                //     //             ->relationship('calendar', 'name')
+                //     //             ->required(),
+                //     //         Forms\Components\select::make('type')
+                //     //             ->options([
+                //     //                 'work' => 'Working',
+                //     //                 'pause' => 'In pause',
+                //     //             ])
+                //     //             ->required(),
+                //     //         Forms\Components\DateTimePicker::make('day_in')
+                //     //             ->required(),
+                //     //         Forms\Components\DateTimePicker::make('day_out')
+                //     //             ->required()
+                //     //             ->after('day_in'),
+                //     //     ])
+                // ])->iconButton()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -134,7 +134,7 @@ class TimesheetResource extends Resource
     {
         return [
             'index' => Pages\ListTimesheets::route('/'),
-            'create' => Pages\CreateTimesheet::route('/create'),
+            // 'create' => Pages\CreateTimesheet::route('/create'),
             // 'edit' => Pages\EditTimesheet::route('/{record}/edit'),
         ];
     }

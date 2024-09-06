@@ -2,6 +2,7 @@
 
 namespace App\Filament\Personal\Widgets;
 
+use App\Models\Timesheet;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -14,6 +15,7 @@ class PersonalWidgetStats extends BaseWidget
             Stat::make('Pending holidays', $this->getPendingHolidays()),
             Stat::make('Approved holidays', $this->getApprovedHolidays()),
             Stat::make('Total work', $this->getTotalHours() . ' hours'),
+            Stat::make('Total Pause', $this->getTotalPause() . ' hours'),
         ];
     }
 
@@ -28,15 +30,41 @@ class PersonalWidgetStats extends BaseWidget
 
     protected function getTotalHours()
     {
-        $totalHours = auth()->user()->timesheets()->where('type' , 'work')->get()
-            ->sum(function ($timesheet) {
-                $dayIn = Carbon::parse($timesheet->day_in);
-                $dayOut = Carbon::parse($timesheet->day_out);
+        $user = auth()->user();
+        $timesheets = Timesheet::where('user_id', $user->id)
+        ->where('type','work')->whereDate('created_at', Carbon::today())->get();
+        $sumSeconds = 0;
+        foreach ($timesheets as $timesheet) {
+            # code...
+            $startTime = Carbon::parse($timesheet->day_in);
+            $finishTime = Carbon::parse($timesheet->day_out);
 
-                $diffInHours = $dayOut->diffInHours($dayIn);
-                return $diffInHours;
-            });
+            $totalDuration = $finishTime->diffInSeconds($startTime);
+            $sumSeconds = $sumSeconds + $totalDuration;
 
-        return $totalHours;
+        }
+        $tiempoFormato = gmdate("H:i:s", $sumSeconds);
+
+        return $tiempoFormato;
+    }
+
+    protected function getTotalPause(){
+        $user = auth()->user();
+        $timesheets = Timesheet::where('user_id', $user->id)
+            ->where('type','pause')->whereDate('created_at', Carbon::today())->get();
+        $sumSeconds = 0;
+        foreach ($timesheets as $timesheet) {
+            # code...
+            $startTime = Carbon::parse($timesheet->day_in);
+            $finishTime = Carbon::parse($timesheet->day_out);
+
+            $totalDuration = $finishTime->diffInSeconds($startTime);
+            $sumSeconds = $sumSeconds + $totalDuration;
+
+        }
+        $tiempoFormato = gmdate("H:i:s", $sumSeconds);
+
+        return $tiempoFormato;
+
     }
 }
