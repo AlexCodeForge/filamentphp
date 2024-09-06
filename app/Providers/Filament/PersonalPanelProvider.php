@@ -31,6 +31,7 @@ class PersonalPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
+            ->databaseNotifications()
             ->discoverResources(in: app_path('Filament/Personal/Resources'), for: 'App\\Filament\\Personal\\Resources')
             ->discoverPages(in: app_path('Filament/Personal/Pages'), for: 'App\\Filament\\Personal\\Pages')
             ->pages([
@@ -55,12 +56,11 @@ class PersonalPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->plugin(PanelRoles::make()
-            ->roleToAssign('developer')
-            ->restrictedRoles(['super_admin', 'panel_user']),
-            )
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                PanelRoles::make()
+                    ->roleToAssign('developer')
+                    ->restrictedRoles(['super_admin', 'panel_user'])
             ]);
     }
 }
