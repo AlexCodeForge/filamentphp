@@ -6,6 +6,8 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use BezhanSalleh\PanelSwitch\PanelSwitch;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,7 +27,25 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch) {
+            $panelSwitch
+                ->modalWidth('sm')
+                ->slideOver()
+                ->visible(fn (): bool => auth()->user()?->hasAnyRole([
+                    'admin',
+                    'general_manager',
+                    'super_admin',
+                ]))
+                ->labels([
+                    'admin' => 'Admin Panel',
+                    'personal' => 'Personal Panel',
+                ])
+                ->icons([
+                    'admin' => 'heroicon-o-square-2-stack',
+                    'personal' => 'heroicon-o-star',
+                ])
+                ->iconSize(16);
+        });
     }
 
     /**

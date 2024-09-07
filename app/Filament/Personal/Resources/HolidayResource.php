@@ -18,11 +18,30 @@ class HolidayResource extends Resource
 {
     protected static ?string $model = Holiday::class;
 
+    protected static ?string $navigationLabel = 'Vacaciones';
+
     protected static ?string $navigationIcon = 'heroicon-m-calendar-date-range';
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::query()->where('user_id', auth()->user()->id)
+        ->where('type', 'pending')
+        ->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::query()->where('user_id', auth()->user()->id)
+        ->where('type', 'pending')
+        ->count() > 0 ? 'warning' : 'primary';
+    }
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        return parent::getEloquentQuery()->where('user_id', auth()->user()->id)->orderBy('id', 'desc');
+    }
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Pending Holidays';
     }
 
     public static function form(Form $form): Form
