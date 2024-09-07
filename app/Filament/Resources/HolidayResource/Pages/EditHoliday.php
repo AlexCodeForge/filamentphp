@@ -56,7 +56,6 @@ class EditHoliday extends EditRecord
                 ])
                 ->sendToDatabase($recipient);
                 Mail::to($recipient)->send(new HolidayStatusConfirmation($recipient , $holiday));
-
         }
     }
 }

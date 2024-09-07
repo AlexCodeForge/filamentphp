@@ -38,7 +38,7 @@
         <p>Dear {{ $requestUserDetails->name }},</p>
         <p>We have reviewed your holiday request for {{ $holiday->day }}.</p>
         <p><strong>Status:</strong> {{ $holiday->type }}</p>
-        @if($holiday->type == 'Approve')
+        @if($holiday->type == 'approve')
             <p><span style="color: green;">Your holiday request has been approved.</span></p>
         @else
             <p><span style="color: red;">Your holiday request has been declined.</span></p>
