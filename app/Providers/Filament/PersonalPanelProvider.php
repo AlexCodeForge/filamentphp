@@ -6,6 +6,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
 use Shanerbaner82\PanelRoles\PanelRoles;
@@ -71,6 +72,16 @@ class PersonalPanelProvider extends PanelProvider
                 ->sort(3),
             ])
             ->topNavigation()
-            ->spa();
+            ->spa()
+            ->unsavedChangesAlerts(false)
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('admin')
+                    ->url('/admin')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->visible(fn (): bool => auth()->user()?->hasAnyRole([
+                        'super_admin',
+                    ])),
+            ]);
     }
 }
