@@ -2,13 +2,15 @@
 
 namespace App\Filament\Personal\Resources\TimesheetResource\Pages;
 
-use Filament\Actions;
-use App\Models\Timesheet;
-use Filament\Actions\Action;
-use Filament\Resources\Pages\ListRecords;
 use App\Filament\Personal\Resources\TimesheetResource;
+use App\Imports\MyTimesheetsImport;
+use App\Models\Timesheet;
 use Carbon\Carbon;
+use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ListRecords;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class ListTimesheets extends ListRecords
@@ -46,8 +48,24 @@ class ListTimesheets extends ListRecords
                         ->icon('heroicon-o-document-text')
                         ->iconColor('success')
                         ->send();
+                }),
+                \EightyNine\ExcelImport\ExcelImportAction::make()
+                    ->color("primary")
+                    ->slideOver()
+                    ->use(MyTimesheetsImport::class)
+                    ,
+            Action::make('CreatePDF')
+                ->label('Generar PDF')
+                ->color('warning')
+                ->requiresConfirmation()
+                ->action(function () {
+                    $pdf = Pdf::loadView('pdf.ListTimesheets' , ['timesheets' => auth()->user()->timesheets()->get()]);
+                    // return $pdf->download('example.pdf');
+                    return response()->streamDownload(function () use ($pdf) { echo $pdf->stream(); }, 'name.pdf');
                 })
-                ,
+
+
+
                 // Action::make('stop Pause')
                 // ->label('Terminar Pausa')
                 // ->color('danger')

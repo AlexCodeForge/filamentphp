@@ -7,14 +7,19 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Timesheet;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\ActionGroup;
+use pxlrbt\FilamentExcel\Columns\Column;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use App\Filament\Personal\ExcelExport\CustomExport;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use App\Filament\Personal\Resources\TimesheetResource\Pages;
 use App\Filament\Personal\Resources\TimesheetResource\RelationManagers;
-use Filament\Actions\Action;
 
 
 class TimesheetResource extends Resource
@@ -119,6 +124,21 @@ class TimesheetResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make('table')
+                            ->fromTable()
+                            ->withFilename( 'Timesheet ' . date('Y-m-d') . ' - export')
+                            // ->askForFilename()
+                            // ->askForWriterType()
+                            // ->only([
+                            //     'user.name',
+                            //     'type'
+                            // ])
+                            ->queue(),
+                        // CustomExport::make('table')->fromTable()
+                        //     ->queue(),
+                        ExcelExport::make('form')->fromForm(),
+                    ]),
                 ]),
             ]);
     }

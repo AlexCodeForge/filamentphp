@@ -11,6 +11,7 @@ use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
 use Shanerbaner82\PanelRoles\PanelRoles;
 use Filament\Http\Middleware\Authenticate;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -62,7 +63,9 @@ class PersonalPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 PanelRoles::make()
                     ->roleToAssign('developer')
-                    ->restrictedRoles(['super_admin', 'panel_user'])
+                    ->restrictedRoles(['super_admin', 'panel_user']),
+                SpotlightPlugin::make(),
+
             ])
             ->navigationItems([
                 NavigationItem::make('Analytics')
@@ -79,9 +82,19 @@ class PersonalPanelProvider extends PanelProvider
                     ->label('admin')
                     ->url('/admin')
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->visible(fn (): bool => auth()->user()?->hasAnyRole([
-                        'super_admin',
-                    ])),
+                    ->visible( function ()
+                        {
+                            if (auth()->user()) {
+                                if (auth()->user()?->hasRole('super_admin')) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    ),
             ]);
     }
 }
